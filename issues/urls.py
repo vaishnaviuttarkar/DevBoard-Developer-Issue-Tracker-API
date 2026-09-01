@@ -1,7 +1,14 @@
 from django.urls import path
-from .views import IssueListAPIView, IssueDetailAPIView
+from rest_framework.routers import DefaultRouter
+from .views import IssueListCreateAPIView, IssueDetailGenericAPIView, IssueViewSet
 
-urlpatterns = [
-    path("issues/", IssueListAPIView.as_view()),
-    path("issues/<int:pk>/", IssueDetailAPIView.as_view())
-]
+router = DefaultRouter()
+
+router.register("issues", IssueViewSet, basename="issue")
+
+# urlpatterns = [
+#     path("issues/", IssueListCreateAPIView.as_view()),
+#     path("issues/<int:pk>/", IssueDetailGenericAPIView.as_view())
+# ]
+
+urlpatterns = router.urls

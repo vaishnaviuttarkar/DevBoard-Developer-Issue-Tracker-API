@@ -2,11 +2,85 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import (
+    ListModelMixin,
+    CreateModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
+)
+from rest_framework.viewsets import ModelViewSet
 
 from django.contrib.auth.models import User
 from issues.models import Issue
 from issues.serializers import IssueSerializer
 
+# ---------------------------------------------------------------------------------
+# Model ViewSets - 1 method 
+# ---------------------------------------------------------------------------------
+class IssueViewSet(ModelViewSet):
+    queryset = Issue.objects.filter(
+                    removed_at__isnull=True
+                ).select_related("project")
+    
+    serializer_class = IssueSerializer
+
+    def perform_create(self,serializer):
+        user = User.objects.get(username="vaishnavi")
+        serializer.save(created_by=user)
+
+# ---------------------------------------------------------------------------------
+# Advanced version of IssueListAPIView & IssueDetailAPIView using GENERICAPIVIEW - 2 methods
+# ---------------------------------------------------------------------------------
+class IssueListCreateAPIView(
+    ListModelMixin,
+    CreateModelMixin,
+    GenericAPIView
+):
+    queryset = Issue.objects.filter(
+                removed_at__isnull=True
+            ).select_related("project")
+
+    serializer_class = IssueSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self,serializer):
+        user = User.objects.get(username="vaishnavi")
+        serializer.save(created_by=user)
+
+class IssueDetailGenericAPIView(
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
+    GenericAPIView
+):
+
+    queryset = Issue.objects.filter(
+                removed_at__isnull=True
+            ).select_related("project")
+    serializer_class = IssueSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+# ---------------------------
+# Without genericAPIView - 2 methods
+# ---------------------------
 class IssueListAPIView(APIView):
 
     def get(self,request):
@@ -34,8 +108,7 @@ class IssueListAPIView(APIView):
             serializer.errors,
             status = status.HTTP_400_BAD_REQUEST
         )
-
-
+    
 class IssueDetailAPIView(APIView):
     def get_object(self,pk):
         try:
