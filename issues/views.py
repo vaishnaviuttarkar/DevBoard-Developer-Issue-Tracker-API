@@ -15,6 +15,7 @@ from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth.models import User
 from issues.models import Issue
 from issues.serializers import IssueSerializer
+from issues.pagination import IssuePagination
 
 # ---------------------------------------------------------------------------------
 # Model ViewSets - 1 method 
@@ -25,6 +26,7 @@ class IssueViewSet(ModelViewSet):
                 ).select_related("project")
     
     serializer_class = IssueSerializer
+    pagination_class = IssuePagination
 
     def perform_create(self,serializer):
         user = User.objects.get(username="vaishnavi")
