@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.db.models import When, Case, IntegerField
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,11 +24,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 # ---------------------------------------------------------------------------------
 # Model ViewSets - 1 method 
 # ---------------------------------------------------------------------------------
-class IssueViewSet(ModelViewSet):
-    queryset = Issue.objects.filter(
-                    removed_at__isnull=True
-                ).select_related("project")
-    
+class IssueViewSet(ModelViewSet):    
     serializer_class = IssueSerializer
     pagination_class = IssuePagination
 
@@ -53,10 +49,22 @@ class IssueViewSet(ModelViewSet):
     ordering_fields = [
         "created_at",
         "updated_at",
-        "priority",
         "title",
+        "priority_rank",
     ]
 
+    def get_queryset(self):
+        return Issue.objects.filter(
+                    removed_at__isnull=True
+                ).select_related("project").annotate(
+                    priority_rank = Case(
+                        When(priority="HIGH", then=1),
+                        When(priority="MEDIUM", then=2),
+                        When(priority="LOW", then=3),
+                        output_field=IntegerField(),
+                    )  
+                )
+    
     def perform_create(self,serializer):
         user = User.objects.get(username="vaishnavi")
         serializer.save(created_by=user)
