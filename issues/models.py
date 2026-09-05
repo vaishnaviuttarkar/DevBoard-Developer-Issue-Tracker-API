@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from projects.models import Project
 
 class Issue(models.Model):
@@ -33,14 +33,14 @@ class Issue(models.Model):
         related_name = "issues"
     )
     assigned_to = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name = "assigned_user"
     )
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name = "created_user"
     )

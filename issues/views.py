@@ -11,11 +11,15 @@ from rest_framework.mixins import (
     DestroyModelMixin,
 )
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from issues.models import Issue
 from issues.serializers import IssueSerializer
 from issues.pagination import IssuePagination
+User = get_user_model()
 
 # Filtering, Ordering, Searching
 from django_filters.rest_framework import DjangoFilterBackend
@@ -27,6 +31,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 class IssueViewSet(ModelViewSet):    
     serializer_class = IssueSerializer
     pagination_class = IssuePagination
+    permission_classes = [IsAuthenticated]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -66,7 +71,7 @@ class IssueViewSet(ModelViewSet):
                 )
     
     def perform_create(self,serializer):
-        user = User.objects.get(username="vaishnavi")
+        user = User.objects.get(username="vaish")
         serializer.save(created_by=user)
 
 # ---------------------------------------------------------------------------------
@@ -90,7 +95,7 @@ class IssueListCreateAPIView(
         return self.create(request, *args, **kwargs)
 
     def perform_create(self,serializer):
-        user = User.objects.get(username="vaishnavi")
+        user = User.objects.get(username="vaish")
         serializer.save(created_by=user)
 
 class IssueDetailGenericAPIView(
@@ -134,7 +139,7 @@ class IssueListAPIView(APIView):
     def post(self,request):
         serializer = IssueSerializer(data=request.data)
 
-        user = User.objects.get(username="vaishnavi")
+        user = User.objects.get(username="vaish")
         if serializer.is_valid():
             serializer.save(created_by=user)
 
