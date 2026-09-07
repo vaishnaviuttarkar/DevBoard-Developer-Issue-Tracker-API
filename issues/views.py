@@ -11,7 +11,7 @@ from rest_framework.mixins import (
     DestroyModelMixin,
 )
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from .permissions import IssuePermission
 
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -31,7 +31,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 class IssueViewSet(ModelViewSet):    
     serializer_class = IssueSerializer
     pagination_class = IssuePagination
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IssuePermission]
 
     filter_backends = [
         DjangoFilterBackend,
