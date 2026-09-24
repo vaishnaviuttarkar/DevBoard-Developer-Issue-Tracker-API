@@ -123,7 +123,7 @@ class IssueDetailGenericAPIView(
         return self.destroy(request, *args, **kwargs)
 
 # ---------------------------
-# Without genericAPIView - 2 methods
+# APIView - 2 methods
 # ---------------------------
 class IssueListAPIView(APIView):
 
@@ -159,7 +159,7 @@ class IssueDetailAPIView(APIView):
             issue = Issue.objects.get(id=pk)
             return issue
         except Issue.DoesNotExist:
-                return None
+            return None
 
     def get(self, request, pk):
         issue = self.get_object(pk)
