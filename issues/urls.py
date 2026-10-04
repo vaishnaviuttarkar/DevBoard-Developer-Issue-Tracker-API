@@ -4,7 +4,7 @@ from .views import IssueListCreateAPIView, IssueDetailGenericAPIView, IssueViewS
 
 router = DefaultRouter()
 
-router.register("issues", IssueViewSet, basename="issue")
+router.register("", IssueViewSet, basename="issue")
 
 # urlpatterns = [
 #     path("issues/", IssueListCreateAPIView.as_view()),
